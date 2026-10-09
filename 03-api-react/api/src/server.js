@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { produtos } from "./produtos.js";
+import { categorias } from "./categorias.js";
 
 const app = express();
 const PORT = 3000;
@@ -35,6 +36,26 @@ app.get("/api/produtos/:id", (req, res) => {
   }
 
   res.json(produto);
+});
+
+// GET /api/categorias — lista de categorias.
+app.get("/api/categorias", (req, res) => {
+  res.json(categorias);
+});
+
+// GET /api/categorias/:id — detalhe da categoria e seus produtos.
+app.get("/api/categorias/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const categoria = categorias.find((c) => c.id === id);
+
+  if (!categoria) {
+    return res.status(404).json({ error: "Categoria não encontrada" });
+  }
+
+  res.json({
+    ...categoria,
+    produtos: produtos.filter((p) => p.categoria === categoria.nome),
+  });
 });
 
 app.listen(PORT, () => {
